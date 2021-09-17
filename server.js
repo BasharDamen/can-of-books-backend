@@ -74,13 +74,14 @@ async function seadData() {
   await book4.save();
 }
 
-// Routs
+/* ===================================Routs=====================================*/
 server.get("/", homeRedirect);
 
 server.get("/books", myBooksRedirector);
 server.post("/addBook", addBookHandler);
 server.delete('/deletBook/:id', deleteBookHandler )
-// Functions
+server.put('/updateBook/:id', updateBookHandler)
+/* ================================Functions===================================*/
 function homeRedirect(req, res) {
   res.send("Welcome Home");
 }
@@ -134,7 +135,22 @@ function deleteBookHandler (req, res){
       }
     })
   })
+}
 
+function updateBookHandler(req,res){
+const id = req.params.id;
+const { bookTitle, bookDescription, bookStatus, clientEmail } = req.body;
+
+BooksModel.findByIdAndUpdate(id,{title: bookTitle, desciption:bookDescription, status:bookStatus}, (err,result)=>{
+  BooksModel.find({clientEmail: clientEmail}, (err, result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      console.log(result);
+      res.send(result)
+    }
+  })
+})
 }
 
 server.listen(PORT, () => {
